@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { AdminNav } from "@/components/admin-nav";
 
 export default async function AdminLayout({
   children,
@@ -21,5 +22,10 @@ export default async function AdminLayout({
 
   if (profile?.role !== "admin") redirect("/dashboard");
 
-  return <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">{children}</div>;
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <AdminNav />
+      {children}
+    </div>
+  );
 }

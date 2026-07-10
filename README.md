@@ -4,10 +4,12 @@ Website for a physiotherapy practice: info pages, paid online chat
 consultations, and appointment booking. Master plan:
 `D:\Projects\Plans\16-physio-website.md`.
 
-**Status:** Phase 1 (marketing site) and Phase 2 (auth + booking) built.
-Phase 2 needs a Supabase project connected before it runs live — see
-`docs/phase-2-notes.md` for the ~5 minute setup. Phases 3–5 (payments, paid
-chat, blog) pending.
+**Status:** Phases 1–4 built: marketing site, auth (email+password) +
+booking, paid online consultations (manual-payment mode out of the box;
+Razorpay activates via env keys), and live realtime chat with read receipts,
+ratings, auto-close cron and an earnings dashboard. Run all four files in
+`supabase/migrations/` in order. Phase 5 (blog, content pass, launch)
+pending. See `docs/phase-N-notes.md` for each phase.
 
 ## Stack
 
