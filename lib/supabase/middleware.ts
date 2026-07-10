@@ -36,15 +36,17 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
+  const isAdminLogin = path === "/admin/login";
   const isProtected =
-    path.startsWith("/dashboard") ||
-    path.startsWith("/admin") ||
-    path.startsWith("/book") ||
-    path.startsWith("/consult"); // covers /consult and /consultation/*
+    !isAdminLogin &&
+    (path.startsWith("/dashboard") ||
+      path.startsWith("/admin") ||
+      path.startsWith("/book") ||
+      path.startsWith("/consult")); // covers /consult and /consultation/*
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();
-    url.pathname = "/login";
+    url.pathname = path.startsWith("/admin") ? "/admin/login" : "/login";
     url.searchParams.set("next", path);
     return NextResponse.redirect(url);
   }
