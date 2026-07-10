@@ -190,7 +190,7 @@ export default function HomePage() {
             ))}
           </div>
           <Link
-            href="/services#online-consultation"
+            href="/consult"
             className="mt-10 inline-block rounded-full bg-white px-6 py-3.5 text-base font-semibold text-teal-800 transition-colors hover:bg-teal-50"
           >
             Start an online consultation

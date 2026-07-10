@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { site, services, whatsappLink, formatInr } from "@/lib/site";
+import Link from "next/link";
+import { site, services, formatInr } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Services & Pricing",
@@ -73,17 +74,12 @@ export default function ServicesPage() {
             <div className="mt-6">
               {s.mode === "chat" ? (
                 <>
-                  {/* Phase 3 replaces this with the paid intake + chat flow */}
-                  <a
-                    href={whatsappLink(
-                      `Hi ${site.doctor.shortName}, I'd like an online consultation (${formatInr(s.priceInr)}).`
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <Link
+                    href="/consult"
                     className="inline-block rounded-full bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800"
                   >
                     Start online consultation
-                  </a>
+                  </Link>
                   <p className="mt-3 text-xs text-stone-500">
                     {site.replyPromise}. Online consultation is for guidance
                     and advice — not for emergencies, and it doesn&apos;t
@@ -91,16 +87,12 @@ export default function ServicesPage() {
                   </p>
                 </>
               ) : (
-                <a
-                  href={whatsappLink(
-                    `Hi ${site.doctor.shortName}, I'd like to book: ${s.name}.`
-                  )}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/book"
                   className="inline-block rounded-full bg-teal-700 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-teal-800"
                 >
                   Book this service
-                </a>
+                </Link>
               )}
             </div>
           </section>

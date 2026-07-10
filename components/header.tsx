@@ -102,7 +102,7 @@ export function Header() {
             {accountLabel}
           </Link>
           <Link
-            href="/services#online-consultation"
+            href="/consult"
             className="rounded-full bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-teal-800"
           >
             Consult Online
@@ -164,7 +164,7 @@ export function Header() {
             {accountLabel}
           </Link>
           <Link
-            href="/services#online-consultation"
+            href="/consult"
             className="mt-2 block rounded-full bg-teal-700 px-4 py-3 text-center text-base font-semibold text-white"
           >
             Consult Online
