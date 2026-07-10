@@ -32,4 +32,4 @@ Supabase project — see `docs/phase-2-notes.md`.
 
 All names, prices, hours, contact details and FAQ content live in
 **`lib/site.ts`**. Page copy lives in `app/**/page.tsx`. Placeholders that must
-be replaced before launch are listed in `docs/phase-1-notes.md`.
+be replaced before launch are listed in `docs/phase-1-notes.md`. 
