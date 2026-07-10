@@ -11,6 +11,7 @@
 
 ---
 
+
 ## 1. The Real-World Problem This Solves
 
 A solo physiotherapist's business runs on word of mouth, Google searches ("physiotherapist near me"), and WhatsApp chaos. She has no credible web presence, no way to monetize the free advice she constantly gives over WhatsApp, and no structured booking — everything is manual back-and-forth.
