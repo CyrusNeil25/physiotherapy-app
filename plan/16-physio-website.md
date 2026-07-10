@@ -1,4 +1,4 @@
-# Project 16 — Physiotherapy Practice Website ("Restore")
+# Project 16 — Physiotherapy Practice Website ("Restore By Preeti")
 
 > A real website for a real client: a physiotherapist's practice site with credible info pages (services, credentials, testimonials, FAQ), **paid chat consultations** (patient pays online → opens a private thread with photo/report uploads → she replies from a simple admin inbox, upgradeable to live real-time chat), and **appointment booking** against her availability calendar. Built to run at ~₹0/month on free tiers, operable by a non-technical owner from her phone.
 
