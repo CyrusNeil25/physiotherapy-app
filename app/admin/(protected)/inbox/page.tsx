@@ -33,7 +33,9 @@ export default async function AdminInboxPage() {
   const [{ data: consultations }, { data: unreadRows }] = await Promise.all([
     supabase
       .from("consultations")
-      .select("id, status, created_at, opened_at, profiles(full_name), services(name)")
+      .select(
+        "id, status, created_at, opened_at, scheduled_at, profiles(full_name), services(name)"
+      )
       .order("created_at", { ascending: false })
       .limit(100),
     supabase
@@ -108,6 +110,16 @@ export default async function AdminInboxPage() {
                         timeZone: "Asia/Kolkata",
                       })}
                     </p>
+                    {c.scheduled_at && (
+                      <p className="mt-0.5 text-xs font-semibold text-teal-700">
+                        📅 Scheduled{" "}
+                        {new Date(c.scheduled_at).toLocaleString("en-IN", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                          timeZone: "Asia/Kolkata",
+                        })}
+                      </p>
+                    )}
                   </div>
                   <span
                     className={`rounded-full border px-3 py-1 text-xs font-semibold ${statusStyles[c.status] ?? ""}`}

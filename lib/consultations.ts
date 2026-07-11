@@ -51,7 +51,7 @@ export async function activatePaidConsultation(opts: {
 
   const openedAt = new Date();
   const expiresAt = new Date(openedAt.getTime() + CONSULT_WINDOW_DAYS * 86_400_000);
-  const { error: consErr } = await supabase
+  const { data: consultation, error: consErr } = await supabase
     .from("consultations")
     .update({
       status: "active",
@@ -59,16 +59,22 @@ export async function activatePaidConsultation(opts: {
       expires_at: expiresAt.toISOString(),
     })
     .eq("id", payment.consultation_id)
-    .eq("status", "awaiting_payment");
+    .eq("status", "awaiting_payment")
+    .select("scheduled_at")
+    .maybeSingle();
   if (consErr) {
     console.error("[activatePaidConsultation] consultation update", consErr);
     return { ok: false };
   }
 
+  const scheduleNote = consultation?.scheduled_at
+    ? `\n\nThe patient asked to chat at: ${new Date(consultation.scheduled_at).toLocaleString("en-IN", { dateStyle: "full", timeStyle: "short", timeZone: "Asia/Kolkata" })}.`
+    : "";
+
   await sendEmail({
     to: doctorNotifyEmail(),
     subject: "New paid consultation — Restore Physiotherapy",
-    text: `A new online consultation has been paid for and is waiting for your reply.\n\nOpen it here: ${site.url}/consultation/${payment.consultation_id}`,
+    text: `A new online consultation has been paid for and is waiting for your reply.${scheduleNote}\n\nOpen it here: ${site.url}/consultation/${payment.consultation_id}`,
   });
 
   return { ok: true, consultationId: payment.consultation_id };

@@ -5,16 +5,25 @@ import { useRouter } from "next/navigation";
 import { formatInr, site } from "@/lib/site";
 import { startConsultation, confirmRazorpayPayment } from "@/app/consult/actions";
 import { openRazorpayCheckout } from "@/lib/razorpay-checkout";
+import { ChatSchedulePicker } from "@/components/chat-schedule-picker";
 
 type ChatService = { id: string; name: string; price_inr: number };
 
-export function ConsultForm({ services }: { services: ChatService[] }) {
+export function ConsultForm({
+  services,
+  chatAvailable = true,
+}: {
+  services: ChatService[];
+  chatAvailable?: boolean;
+}) {
   const router = useRouter();
   const [serviceId, setServiceId] = useState(services[0]?.id ?? "");
   const [problem, setProblem] = useState("");
   const [painArea, setPainArea] = useState("");
   const [duration, setDuration] = useState("");
   const [history, setHistory] = useState("");
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
+  const [wantsSchedule, setWantsSchedule] = useState(false);
   const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState<"idle" | "working" | "error">("idle");
   const [error, setError] = useState("");
@@ -24,12 +33,18 @@ export function ConsultForm({ services }: { services: ChatService[] }) {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!service) return;
+    if (wantsSchedule && !scheduledAt) {
+      setError("Please pick a time, or choose “As soon as possible”.");
+      setStatus("error");
+      return;
+    }
     setStatus("working");
     setError("");
 
     const result = await startConsultation({
       serviceId,
       intake: { problem, pain_area: painArea, duration, history },
+      scheduledAt: scheduledAt ?? undefined,
     });
 
     if (!result.ok) {
@@ -82,6 +97,14 @@ export function ConsultForm({ services }: { services: ChatService[] }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
+      {!chatAvailable && (
+        <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {site.doctor.shortName} is currently unavailable for live chat. You
+          can still submit your consultation, or schedule a specific time
+          below — she&apos;ll reply as soon as she&apos;s back.
+        </p>
+      )}
+
       <div>
         <p className="text-sm font-semibold uppercase tracking-wide text-stone-500">
           Consultation type
@@ -163,6 +186,8 @@ export function ConsultForm({ services }: { services: ChatService[] }) {
         You&apos;ll be able to attach photos and reports in the private chat
         after payment. {site.replyPromise}.
       </p>
+
+      <ChatSchedulePicker onChange={setScheduledAt} onModeChange={setWantsSchedule} />
 
       <label className="flex items-start gap-3 text-sm text-stone-600">
         <input

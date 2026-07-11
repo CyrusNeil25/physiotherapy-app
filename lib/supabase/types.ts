@@ -132,6 +132,7 @@ export type Database = {
           status: "awaiting_payment" | "active" | "answered" | "closed" | "refunded";
           intake: Json;
           consent_at: string;
+          scheduled_at: string | null;
           opened_at: string | null;
           expires_at: string | null;
           closed_at: string | null;
@@ -146,6 +147,7 @@ export type Database = {
           status?: "awaiting_payment" | "active" | "answered" | "closed" | "refunded";
           intake?: Json;
           consent_at?: string;
+          scheduled_at?: string | null;
           opened_at?: string | null;
           expires_at?: string | null;
           closed_at?: string | null;
@@ -245,6 +247,12 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      clinic_settings: {
+        Row: { id: boolean; chat_available: boolean };
+        Insert: { id?: boolean; chat_available?: boolean };
+        Update: Partial<Database["public"]["Tables"]["clinic_settings"]["Insert"]>;
+        Relationships: [];
       };
     };
     Views: Record<string, never>;

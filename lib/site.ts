@@ -30,6 +30,9 @@ export const site = {
   whatsappNumber: "919876543210", // digits only, country code first — TODO: real number
   contactEmail: "hello@example.com", // TODO: real email (also used as contact-form recipient)
 
+  /** UPI ID for manual-mode consultation payments — TODO: real VPA (e.g. name@okhdfcbank) */
+  upiId: "restore.physio@okaxis",
+
   /** Clinic */
   address: {
     line1: "2nd Floor, Wellness Plaza",
