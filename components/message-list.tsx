@@ -69,8 +69,12 @@ export function MessageList({
         (payload) => {
           const m = payload.new as Message;
           setLiveMessages((prev) => merge(prev, [m]));
-          // Reading it live — flip the sender's ticks
-          if (m.sender_id !== viewerId) void markThreadRead(consultationId);
+          // Only auto-mark read if this tab is actually the one on screen —
+          // a background/inactive tab still receives the Realtime push and
+          // must not silently mark messages as read nobody has seen yet.
+          if (m.sender_id !== viewerId && document.visibilityState === "visible") {
+            void markThreadRead(consultationId);
+          }
         }
       )
       .on(
@@ -98,8 +102,16 @@ export function MessageList({
       )
       .subscribe();
 
+    // Catches messages that arrived while this tab was backgrounded — the
+    // INSERT handler above skipped marking them read at the time.
+    function onVisible() {
+      if (document.visibilityState === "visible") void markThreadRead(consultationId);
+    }
+    document.addEventListener("visibilitychange", onVisible);
+
     return () => {
       supabase.removeChannel(channel);
+      document.removeEventListener("visibilitychange", onVisible);
     };
   }, [consultationId, viewerId, router]);
 

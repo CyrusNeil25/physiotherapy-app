@@ -10,12 +10,16 @@ export const metadata: Metadata = {
 
 export default async function ConsultPage() {
   const supabase = await createClient();
-  const { data: services } = await supabase
-    .from("services")
-    .select("id, name, price_inr")
-    .eq("mode", "chat")
-    .eq("active", true)
-    .order("sort");
+  const [{ data: services }, { data: settings }] = await Promise.all([
+    supabase
+      .from("services")
+      .select("id, name, price_inr")
+      .eq("mode", "chat")
+      .eq("active", true)
+      .order("sort"),
+    supabase.from("clinic_settings").select("chat_available").eq("id", true).single(),
+  ]);
+  const chatAvailable = settings?.chat_available ?? true;
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
@@ -29,7 +33,7 @@ export default async function ConsultPage() {
 
       <div className="mt-10">
         {services && services.length > 0 ? (
-          <ConsultForm services={services} />
+          <ConsultForm services={services} chatAvailable={chatAvailable} />
         ) : (
           <p className="rounded-xl border border-stone-200 bg-stone-50 p-6 text-stone-600">
             Online consultations aren&apos;t available right now — the chat

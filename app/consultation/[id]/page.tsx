@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { createClient, createAdminClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { site, formatInr, whatsappLink } from "@/lib/site";
 import { MessageComposer } from "@/components/message-composer";
 import { MessageList } from "@/components/message-list";
 import { ConsultAdminActions } from "@/components/consult-admin-actions";
 import { PayNowButton } from "@/components/pay-now-button";
 import { RatingForm } from "@/components/rating-form";
+import { UpiQr } from "@/components/upi-qr";
+import { MarkThreadRead } from "@/components/mark-thread-read";
 import type { Intake } from "@/lib/supabase/types";
 
 export const metadata: Metadata = { title: "Consultation" };
@@ -54,16 +56,6 @@ export default async function ConsultationPage({
     .single();
   const isDoctor = viewerProfile?.role === "admin";
 
-  // Opening the thread marks the other party's messages as read — their
-  // read ticks update live over the Realtime feed.
-  const admin = createAdminClient();
-  await admin
-    .from("messages")
-    .update({ read_at: new Date().toISOString() })
-    .eq("consultation_id", id)
-    .neq("sender_id", user.id)
-    .is("read_at", null);
-
   const { data: messages } = await supabase
     .from("messages")
     .select("*")
@@ -91,6 +83,7 @@ export default async function ConsultationPage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <MarkThreadRead consultationId={id} />
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-stone-900">
@@ -112,6 +105,12 @@ export default async function ConsultationPage({
         </span>
       </div>
 
+      {consultation.scheduled_at && (
+        <p className="mt-3 rounded-lg border border-teal-200 bg-teal-50 px-4 py-2.5 text-sm font-medium text-teal-800">
+          📅 Scheduled chat: {fmt(consultation.scheduled_at)}
+        </p>
+      )}
+
       {/* Payment banner */}
       {consultation.status === "awaiting_payment" && !isDoctor && (
         <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-5">
@@ -126,22 +125,27 @@ export default async function ConsultationPage({
               <PayNowButton consultationId={id} serviceName={service?.name ?? ""} />
             </div>
           ) : (
-            <p className="mt-2 text-sm leading-relaxed text-amber-700">
-              Please pay {service ? formatInr(service.price_inr) : ""} via UPI or
-              bank transfer and share the payment screenshot{" "}
-              <a
-                href={whatsappLink(
-                  `Hi, I've paid for my online consultation (ref ${id.slice(0, 8)}). Sharing the screenshot.`
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold underline"
-              >
-                on WhatsApp
-              </a>
-              . {site.doctor.shortName} will confirm and your consultation will
-              open — you&apos;ll get an email.
-            </p>
+            <div className="mt-3">
+              <UpiQr
+                amountInr={service?.price_inr ?? 0}
+                note={`Consult ${id.slice(0, 8)}`}
+              />
+              <p className="mt-3 text-sm leading-relaxed text-amber-700">
+                After paying, share the screenshot{" "}
+                <a
+                  href={whatsappLink(
+                    `Hi, I've paid for my online consultation (ref ${id.slice(0, 8)}). Sharing the screenshot.`
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-semibold underline"
+                >
+                  on WhatsApp
+                </a>
+                . {site.doctor.shortName} will confirm and your consultation
+                will open — you&apos;ll get an email.
+              </p>
+            </div>
           )}
         </div>
       )}

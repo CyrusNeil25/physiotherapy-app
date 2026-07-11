@@ -29,3 +29,14 @@ export async function updateBookingStatus(
   if (error) throw error;
   revalidatePath("/admin");
 }
+
+export async function setChatAvailability(available: boolean) {
+  const supabase = await requireAdmin();
+  const { error } = await supabase
+    .from("clinic_settings")
+    .update({ chat_available: available })
+    .eq("id", true);
+  if (error) throw error;
+  revalidatePath("/admin");
+  revalidatePath("/consult");
+}

@@ -20,6 +20,7 @@ type StartResult =
 export async function startConsultation(input: {
   serviceId: string;
   intake: Intake;
+  scheduledAt?: string;
 }): Promise<StartResult> {
   const supabase = await createClient();
   const {
@@ -29,6 +30,15 @@ export async function startConsultation(input: {
 
   if (!input.intake.problem?.trim()) {
     return { ok: false, error: "Please describe your problem." };
+  }
+
+  let scheduledAt: string | null = null;
+  if (input.scheduledAt) {
+    const parsed = new Date(input.scheduledAt);
+    if (Number.isNaN(parsed.getTime()) || parsed.getTime() < Date.now()) {
+      return { ok: false, error: "Please pick a valid, upcoming time." };
+    }
+    scheduledAt = parsed.toISOString();
   }
 
   const { data: service } = await supabase
@@ -45,6 +55,7 @@ export async function startConsultation(input: {
     .insert({
       patient_id: user.id,
       service_id: service.id,
+      scheduled_at: scheduledAt,
       intake: {
         problem: input.intake.problem.trim().slice(0, 5000),
         pain_area: (input.intake.pain_area ?? "").trim().slice(0, 200),
